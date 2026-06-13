@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
 class Node {
@@ -9,33 +10,45 @@ public:
 
     Node(int val) {
         data = val;
-        left = NULL;
-        right = NULL;
+        left = nullptr;
+        right = nullptr;
     }
 };
 
-void morrisTraversal(Node* root) {
+vector<int> morrisInorder(Node* root) {
+    vector<int> result;
     Node* current = root;
-    while (current != NULL) {
-        if (current->left == NULL) {
-            cout << current->data << " ";
+
+    while (current != nullptr) {
+
+        if (current->left == nullptr) {
+            result.push_back(current->data);
             current = current->right;
-        } else {
-            Node* pre = current->left;
-            while (pre->right != NULL && pre->right != current) {
-                pre = pre->right;
+        }
+        else {
+            Node* predecessor = current->left;
+
+            // Find rightmost node in left subtree
+            while (predecessor->right != nullptr &&
+                   predecessor->right != current) {
+                predecessor = predecessor->right;
             }
 
-            if (pre->right == NULL) {
-                pre->right = current;
+            if (predecessor->right == nullptr) {
+                // Create thread
+                predecessor->right = current;
                 current = current->left;
-            } else {
-                pre->right = NULL;
-                cout << current->data << " ";
+            }
+            else {
+                // Remove thread
+                predecessor->right = nullptr;
+                result.push_back(current->data);
                 current = current->right;
             }
         }
     }
+
+    return result;
 }
 
 int main() {
@@ -45,8 +58,13 @@ int main() {
     root->left->left = new Node(4);
     root->left->right = new Node(5);
 
+    vector<int> result = morrisInorder(root);
+
     cout << "Morris Inorder Traversal: ";
-    morrisTraversal(root);
+    for (int x : result) {
+        cout << x << " ";
+    }
+    cout << endl;
 
     return 0;
 }
